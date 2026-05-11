@@ -154,22 +154,6 @@ h1 {
     margin-top: 20px;
 }
 
-/* Select de estado */
-.select-status {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    background-color: white;
-    outline: none;
-    transition: border 0.2s;
-}
-
-.select-status:focus {
-    border-color: #3498db;
-}
-
 /* Modo edición */
 .task-edit {
     width: 100%;
