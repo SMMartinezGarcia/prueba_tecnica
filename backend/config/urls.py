@@ -3,5 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('tasks.urls')),  # ← conecta las rutas de tasks
+    path('api/', include('tasks.urls')),  #  conecta las rutas de tasks
 ]

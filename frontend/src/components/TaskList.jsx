@@ -2,19 +2,16 @@ import { useState } from 'react';
 import { deleteTask, updateTask } from '../api';
 
 function TaskList({ tasks, onTaskUpdated }) {
-    // Guarda el id de la tarea que se está editando
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
 
-    // Abre el modo edición de una tarea
     const handleEdit = (task) => {
         setEditingId(task.id);
         setEditTitle(task.title);
         setEditDescription(task.description);
     };
 
-    // Guarda los cambios de la tarea editada
     const handleSave = async (task) => {
         if (!editTitle.trim()) return;
         try {
@@ -30,22 +27,23 @@ function TaskList({ tasks, onTaskUpdated }) {
         }
     };
 
-    // Cancela la edición sin guardar
     const handleCancel = () => {
         setEditingId(null);
     };
 
-    // Marca o desmarca como completada
-    const handleToggleComplete = async (task) => {
+    // Cambia el estado desde el select
+    const handleStatusChange = async (task, value) => {
         try {
-            await updateTask(task.id, { ...task, completed: !task.completed });
+            await updateTask(task.id, {
+                ...task,
+                completed: value === 'completado'
+            });
             onTaskUpdated();
         } catch (err) {
-            console.error('Error al actualizar la tarea');
+            console.error('Error al actualizar estado');
         }
     };
 
-    // Elimina una tarea
     const handleDelete = async (id) => {
         try {
             await deleteTask(id);
@@ -66,7 +64,6 @@ function TaskList({ tasks, onTaskUpdated }) {
                     key={task.id}
                     className={`task-card ${task.completed ? 'completed' : ''}`}
                 >
-                    {/* Modo edición */}
                     {editingId === task.id ? (
                         <div className="task-edit">
                             <input
@@ -88,16 +85,21 @@ function TaskList({ tasks, onTaskUpdated }) {
                             </div>
                         </div>
                     ) : (
-                        /* Modo normal */
                         <>
                             <div className="task-info">
                                 <h3>{task.title}</h3>
                                 <p>{task.description}</p>
                             </div>
                             <div className="task-actions">
-                                <button className="btn-complete" onClick={() => handleToggleComplete(task)}>
-                                    {task.completed ? '↩ Desmarcar' : '✓ Completar'}
-                                </button>
+                                {/* Lista desplegable de estado */}
+                                <select
+                                    className="select-status"
+                                    value={task.completed ? 'completado' : 'pendiente'}
+                                    onChange={(e) => handleStatusChange(task, e.target.value)}
+                                >
+                                    <option value="pendiente">⏳ Pendiente</option>
+                                    <option value="completado">✅ Completado</option>
+                                </select>
                                 <button className="btn-edit" onClick={() => handleEdit(task)}>
                                     ✏️ Editar
                                 </button>
@@ -115,4 +117,4 @@ function TaskList({ tasks, onTaskUpdated }) {
 
 export default TaskList;
 
-/*se muestra todas las tareas como una tarjeta, boton para desmarca/marca de completado, boton de eliminacion de tarea y si no hay alguna trea se mietra un mensaje*/
+/*se muestra todas las tareas como una tarjeta, boton para desmarca/marca de completado o pendiente, boton de eliminacion de tarea, boton de editar tareas y si no hay alguna trea se mietra un mensaje*/
