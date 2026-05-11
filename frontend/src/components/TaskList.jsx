@@ -77,10 +77,10 @@ function TaskList({ tasks, onTaskUpdated }) {
                             />
                             <div className="edit-actions">
                                 <button className="btn-save" onClick={() => handleSave(task)}>
-                                    💾 Guardar
+                                    Guardar
                                 </button>
                                 <button className="btn-cancel" onClick={handleCancel}>
-                                    ✕ Cancelar
+                                    Cancelar
                                 </button>
                             </div>
                         </div>
@@ -97,14 +97,14 @@ function TaskList({ tasks, onTaskUpdated }) {
                                     value={task.completed ? 'completado' : 'pendiente'}
                                     onChange={(e) => handleStatusChange(task, e.target.value)}
                                 >
-                                    <option value="pendiente">⏳ Pendiente</option>
-                                    <option value="completado">✅ Completado</option>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="completado">Completado</option>
                                 </select>
                                 <button className="btn-edit" onClick={() => handleEdit(task)}>
-                                    ✏️ Editar
+                                    Editar
                                 </button>
                                 <button className="btn-delete" onClick={() => handleDelete(task.id)}>
-                                    🗑 Eliminar
+                                    Eliminar
                                 </button>
                             </div>
                         </>
