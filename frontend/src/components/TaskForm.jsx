@@ -1,34 +1,26 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { createTask } from '../api';
 
 function TaskForm({ onTaskCreated }) {
-    // Estado del formulario
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [error, setError] = useState('');
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Validación: el título es obligatorio
-        if (!title.trim()) {
-            setError('El título es obligatorio');
-            return;
-        }
-
+    const onSubmit = async (data) => {
         try {
-            // Envía la tarea al backend
-            await createTask({ title, description, completed: false });
+            // Envía la tarea al backend con los datos del formulario
+            await createTask({ ...data, completed: false });
             
-            // Limpia el formulario
-            setTitle('');
-            setDescription('');
-            setError('');
+            // Limpia el formulario después de crear
+            reset();
             
             // Avisa al componente padre que se creó una tarea
             onTaskCreated();
         } catch (err) {
-            setError('Error al crear la tarea, intenta de nuevo');
+            console.error('Error al crear la tarea');
         }
     };
 
@@ -36,21 +28,28 @@ function TaskForm({ onTaskCreated }) {
         <div className="task-form">
             <h2>Nueva Tarea</h2>
 
-            {/* Muestra el error si hay alguno */}
-            {error && <p className="error">{error}</p>}
-
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <input
                     type="text"
                     placeholder="Título de la tarea"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    {...register('title', {
+                        required: 'El título es obligatorio',
+                        maxLength: {
+                            value: 200,
+                            message: 'El título no puede tener más de 200 caracteres'
+                        }
+                    })}
                 />
+                {/* Muestra error del título si hay */}
+                {errors.title && (
+                    <p className="error">{errors.title.message}</p>
+                )}
+
                 <textarea
                     placeholder="Descripción (opcional)"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    {...register('description')}
                 />
+
                 <button type="submit">Agregar Tarea</button>
             </form>
         </div>
@@ -58,4 +57,3 @@ function TaskForm({ onTaskCreated }) {
 }
 
 export default TaskForm;
-/*aqui se tiene el formamulario(tuitulo y descripcion),la validacion del titulo que no se encuentre vacio para antes del envio, la limpieza del fomrmulario al envialo, si se genera algun error se muestra en la patalaa*/

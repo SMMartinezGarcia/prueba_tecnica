@@ -25,7 +25,7 @@ function App() {
 
     return (
         <div className="app">
-            <h1>ToDo Ist</h1>
+            <h1>ToDo List</h1>
 
             {/* Formulario para crear tareas */}
             <TaskForm onTaskCreated={fetchTasks} />
