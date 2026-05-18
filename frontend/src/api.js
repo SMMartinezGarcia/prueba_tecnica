@@ -1,26 +1,19 @@
 import axios from 'axios';
 
-// URL base del backend
 const API_URL = 'http://localhost:8000/api/tasks/';
+const AUTH_URL = 'http://localhost:8000/api/auth/';
 
-// Obtener todas las tareas
-export const getTasks = () => {
-    return axios.get(API_URL);
-};
+// Permite mandar y recibir cookies
+axios.defaults.withCredentials = true;
 
-// Crear una tarea nueva
-export const createTask = (task) => {
-    return axios.post(API_URL, task);
-};
+// Tareas
+export const getTasks = () => axios.get(API_URL);
+export const createTask = (task) => axios.post(API_URL, task);
+export const updateTask = (id, task) => axios.put(`${API_URL}${id}/`, task);
+export const deleteTask = (id) => axios.delete(`${API_URL}${id}/`);
 
-// Actualizar una tarea existente
-export const updateTask = (id, task) => {
-    return axios.put(`${API_URL}${id}/`, task);
-};
-
-// Eliminar una tarea
-export const deleteTask = (id) => {
-    return axios.delete(`${API_URL}${id}/`);
-};
-
-/*aqui sentralizamoss las urls el back de cada componete,poe si en algun moneto se cambia la url*/
+// Autenticación
+export const login = (credentials) => axios.post(`${AUTH_URL}login/`, credentials);
+export const register = (userData) => axios.post(`${AUTH_URL}register/`, userData);
+export const logout = () => axios.post(`${AUTH_URL}logout/`);
+export const getMe = () => axios.get(`${AUTH_URL}me/`);

@@ -1,44 +1,89 @@
 import { useState, useEffect } from 'react';
-import { getTasks } from './api';
+import { getTasks, logout, getMe } from './api';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
+import Login from './components/Login';
+import Register from './components/Register';
 import './App.css';
 
 function App() {
-    // Estado que guarda todas las tareas
     const [tasks, setTasks] = useState([]);
+    const [page, setPage] = useState('login');
+    const [username, setUsername] = useState('');
 
-    // Función que obtiene las tareas del backend
-    const fetchTasks = async () => {
-        try {
-            const response = await getTasks();
-            setTasks(response.data);
-        } catch (err) {
-            console.error('Error al obtener las tareas');
-        }
-    };
-
-    // Se ejecuta automáticamente cuando carga la página
     useEffect(() => {
         fetchTasks();
     }, []);
 
+    const fetchTasks = async () => {
+        try {
+            const [taskRes, meRes] = await Promise.all([
+                getTasks(),
+                getMe()
+            ]);
+            setTasks(taskRes.data);
+            setUsername(meRes.data.username);
+            setPage('app');
+        } catch (err) {
+            if (err.response?.status === 401) {
+                setPage('login');
+            }
+        }
+    };
+
+    const handleLogin = (user) => {
+        setUsername(user);
+        setPage('app');
+        fetchTasks();
+    };
+
+    const handleRegister = () => setPage('login');
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+        } catch (err) {
+            console.error('Error al cerrar sesión');
+        }
+        setUsername('');
+        setPage('login');
+    };
+
+    if (page === 'login') {
+        return (
+            <Login
+                onLogin={handleLogin}
+                goToRegister={() => setPage('register')}
+            />
+        );
+    }
+
+    if (page === 'register') {
+        return (
+            <Register
+                onRegister={handleRegister}
+                goToLogin={() => setPage('login')}
+            />
+        );
+    }
+
     return (
         <div className="app">
-            <h1>ToDo List</h1>
-
-            {/* Formulario para crear tareas */}
+            <div className="app-header">
+                <h1>📝 Mi Lista de Tareas</h1>
+                <div className="header-right">
+                    <span className="welcome">
+                        👋 Hola, <strong>{username}</strong>
+                    </span>
+                    <button className="btn-logout" onClick={handleLogout}>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
             <TaskForm onTaskCreated={fetchTasks} />
-
-            {/* Lista de tareas */}
-            <TaskList
-                tasks={tasks}
-                onTaskUpdated={fetchTasks}
-            />
+            <TaskList tasks={tasks} onTaskUpdated={fetchTasks} />
         </div>
     );
 }
 
 export default App;
-
-/* se carga las tareas, cuando se crea o se actuliza alguna tareea se rcarga auto, tambien pasa los datos que estan en TaskList y TaskForm  */
